@@ -196,3 +196,21 @@
   .quiet-corner-image{width:52px!important;height:52px!important}
   .cart-drawer__panel{width:100vw}
 }
+
+/* Robust footer-image fallback: hide the broken <img> chrome and render the same asset as a CSS background. */
+.quiet-corner-wrap{position:relative;min-height:70px;align-items:center}
+.quiet-corner-image{display:none!important}
+.quiet-corner-wrap::after{
+  content:"";
+  display:block;
+  width:52px;
+  height:52px;
+  flex:0 0 52px;
+  border-radius:50%;
+  background-image:url("../img/quiet-corner.jpg");
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  background-color:var(--champagne);
+  box-shadow:0 8px 24px rgba(33,29,27,.12),0 0 0 1px rgba(245,239,232,.28);
+}
