@@ -1,6 +1,7 @@
 (() => {
   const body = document.body;
   const header = document.getElementById('siteHeader');
+  const announcement = document.querySelector('.announcement');
   const mobileMenu = document.getElementById('mobileMenu');
   const menuToggle = document.querySelector('.menu-toggle');
   const menuClose = document.querySelector('.mobile-menu__close');
@@ -8,6 +9,37 @@
   const selectedProduct = document.getElementById('selectedProduct');
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const coarsePointer = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+
+  // Keep the marquee and the navigation locked together at the top of the viewport.
+  // The measured announcement height is used instead of a hard-coded offset so the
+  // layout stays correct on desktop, mobile and after responsive breakpoints change.
+  const syncPinnedTopBars = () => {
+    if (!announcement || !header) return;
+    const announcementHeight = Math.round(announcement.getBoundingClientRect().height);
+
+    announcement.style.position = 'fixed';
+    announcement.style.top = '0';
+    announcement.style.left = '0';
+    announcement.style.right = '0';
+    announcement.style.width = '100%';
+    announcement.style.zIndex = '70';
+
+    header.style.position = 'fixed';
+    header.style.top = `${announcementHeight}px`;
+    header.style.left = '0';
+    header.style.right = '0';
+    header.style.zIndex = '65';
+
+    // Replaces the space the marquee used to occupy in normal document flow.
+    body.style.paddingTop = `${announcementHeight}px`;
+
+    // Anchor links should stop below both pinned bars instead of hiding underneath them.
+    const compactHeaderHeight = window.innerWidth <= 680 ? 62 : 70;
+    document.documentElement.style.scrollPaddingTop = `${announcementHeight + compactHeaderHeight + 12}px`;
+  };
+
+  syncPinnedTopBars();
+  window.addEventListener('resize', syncPinnedTopBars, { passive: true });
 
   requestAnimationFrame(() => body.classList.add('loaded'));
 
