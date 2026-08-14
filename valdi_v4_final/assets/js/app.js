@@ -10,6 +10,46 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const coarsePointer = window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
+  // Product hover: subtle pink edge blur, without a custom cursor label.
+  const productHoverStyle = document.createElement('style');
+  productHoverStyle.textContent = `
+    .view-cursor{display:none!important}
+    .product-cursor-zone{cursor:default!important}
+    .product-media{isolation:isolate}
+    .product-media::after{
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:2;
+      pointer-events:none;
+      opacity:0;
+      background:
+        radial-gradient(ellipse at center,
+          rgba(242,125,184,0) 0%,
+          rgba(242,125,184,0) 48%,
+          rgba(242,125,184,.045) 62%,
+          rgba(242,125,184,.12) 76%,
+          rgba(232,201,211,.24) 100%);
+      box-shadow:
+        inset 0 0 34px rgba(242,125,184,.10),
+        inset 0 0 78px rgba(242,125,184,.12);
+      -webkit-backdrop-filter:blur(2.2px) saturate(1.03);
+      backdrop-filter:blur(2.2px) saturate(1.03);
+      -webkit-mask-image:radial-gradient(ellipse at center,transparent 0 46%,rgba(0,0,0,.15) 60%,rgba(0,0,0,.72) 80%,#000 100%);
+      mask-image:radial-gradient(ellipse at center,transparent 0 46%,rgba(0,0,0,.15) 60%,rgba(0,0,0,.72) 80%,#000 100%);
+      transition:opacity .45s cubic-bezier(.2,.8,.2,1);
+    }
+    .product-media:hover::after{opacity:1}
+    .product-media img{transition:transform .65s cubic-bezier(.2,.8,.2,1),filter .45s ease!important}
+    .product-media:hover img{filter:saturate(1.035) contrast(.985)}
+    .product-label{z-index:4}
+    @media (hover:none),(pointer:coarse){
+      .product-media::after{display:none}
+      .product-media:hover img{filter:none}
+    }
+  `;
+  document.head.appendChild(productHoverStyle);
+
   // Keep the marquee and the navigation locked together at the top of the viewport.
   // The measured announcement height is used instead of a hard-coded offset so the
   // layout stays correct on desktop, mobile and after responsive breakpoints change.
@@ -91,18 +131,6 @@
       btn.addEventListener('pointerleave', () => {
         btn.style.setProperty('--mx', '50%');
         btn.style.setProperty('--my', '50%');
-      });
-    });
-
-    document.querySelectorAll('.product-cursor-zone').forEach(zone => {
-      const cursor = zone.querySelector('.view-cursor');
-      if (!cursor) return;
-      zone.addEventListener('pointerenter', () => zone.classList.add('cursor-active'));
-      zone.addEventListener('pointerleave', () => zone.classList.remove('cursor-active'));
-      zone.addEventListener('pointermove', e => {
-        const r = zone.getBoundingClientRect();
-        cursor.style.left = `${e.clientX - r.left}px`;
-        cursor.style.top = `${e.clientY - r.top}px`;
       });
     });
   }
