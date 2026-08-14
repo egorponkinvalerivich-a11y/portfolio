@@ -10,415 +10,298 @@
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const coarsePointer = window.matchMedia('(hover: none), (pointer: coarse)').matches;
 
-  // Product hover: subtle pink edge blur, without a custom cursor label.
+  /* Load the non-destructive v5 visual patch. */
+  if (!document.querySelector('link[data-valdi-v5]')) {
+    const patch = document.createElement('link');
+    patch.rel = 'stylesheet';
+    patch.href = 'assets/css/patch-v5.css';
+    patch.dataset.valdiV5 = 'true';
+    document.head.appendChild(patch);
+  }
+
+  /* Keep the refined product hover without the old VIEW cursor. */
   const productHoverStyle = document.createElement('style');
   productHoverStyle.textContent = `
     .view-cursor{display:none!important}
     .product-cursor-zone{cursor:default!important}
     .product-media{isolation:isolate}
-    .product-media::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      z-index:2;
-      pointer-events:none;
-      opacity:0;
-      background:
-        radial-gradient(ellipse at center,
-          rgba(242,125,184,0) 0%,
-          rgba(242,125,184,0) 48%,
-          rgba(242,125,184,.045) 62%,
-          rgba(242,125,184,.12) 76%,
-          rgba(232,201,211,.24) 100%);
-      box-shadow:
-        inset 0 0 34px rgba(242,125,184,.10),
-        inset 0 0 78px rgba(242,125,184,.12);
-      -webkit-backdrop-filter:blur(2.2px) saturate(1.03);
-      backdrop-filter:blur(2.2px) saturate(1.03);
-      -webkit-mask-image:radial-gradient(ellipse at center,transparent 0 46%,rgba(0,0,0,.15) 60%,rgba(0,0,0,.72) 80%,#000 100%);
-      mask-image:radial-gradient(ellipse at center,transparent 0 46%,rgba(0,0,0,.15) 60%,rgba(0,0,0,.72) 80%,#000 100%);
-      transition:opacity .45s cubic-bezier(.2,.8,.2,1);
-    }
+    .product-media::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center,rgba(242,125,184,0) 0%,rgba(242,125,184,0) 48%,rgba(242,125,184,.045) 62%,rgba(242,125,184,.12) 76%,rgba(232,201,211,.24) 100%);box-shadow:inset 0 0 34px rgba(242,125,184,.10),inset 0 0 78px rgba(242,125,184,.12);-webkit-backdrop-filter:blur(2.2px) saturate(1.03);backdrop-filter:blur(2.2px) saturate(1.03);-webkit-mask-image:radial-gradient(ellipse at center,transparent 0 46%,rgba(0,0,0,.15) 60%,rgba(0,0,0,.72) 80%,#000 100%);mask-image:radial-gradient(ellipse at center,transparent 0 46%,rgba(0,0,0,.15) 60%,rgba(0,0,0,.72) 80%,#000 100%);transition:opacity .45s cubic-bezier(.2,.8,.2,1)}
     .product-media:hover::after{opacity:1}
     .product-media img{transition:transform .65s cubic-bezier(.2,.8,.2,1),filter .45s ease!important}
     .product-media:hover img{filter:saturate(1.035) contrast(.985)}
     .product-label{z-index:4}
-    @media (hover:none),(pointer:coarse){
-      .product-media::after{display:none}
-      .product-media:hover img{filter:none}
-    }
+    @media (hover:none),(pointer:coarse){.product-media::after{display:none}.product-media:hover img{filter:none}}
   `;
   document.head.appendChild(productHoverStyle);
 
-  // Rebuilt lookbook: a controlled editorial grid instead of the old masonry layout.
-  // Parallax is intentionally neutralized here — the photography should feel aligned,
-  // calm and premium rather than shifting out of the composition while scrolling.
-  const lookbookStyle = document.createElement('style');
-  lookbookStyle.textContent = `
-    .lookbook{
-      position:relative;
-      overflow:hidden;
-      background:linear-gradient(180deg,#fbf7f2 0%,#f5efe8 100%);
-    }
-    .lookbook-head{
-      display:grid!important;
-      grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr)!important;
-      grid-template-rows:auto auto!important;
-      column-gap:clamp(36px,6vw,96px)!important;
-      row-gap:18px!important;
-      align-items:end!important;
-      margin-bottom:clamp(42px,5vw,72px)!important;
-    }
-    .lookbook-head>.eyebrow{
-      grid-column:1!important;
-      grid-row:1!important;
-      align-self:start;
-    }
-    .lookbook-head h2{
-      grid-column:1!important;
-      grid-row:2!important;
-      margin:0!important;
-      max-width:860px;
-      font-size:clamp(64px,6vw,110px)!important;
-      line-height:.78!important;
-    }
-    .lookbook-head>p{
-      grid-column:2!important;
-      grid-row:2!important;
-      margin:0 0 8px!important;
-      max-width:410px;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.75;
-    }
-    .lookbook-grid{
-      display:grid!important;
-      grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)!important;
-      grid-template-areas:
-        "a b"
-        "a word"
-        "c d"
-        "e f"!important;
-      grid-template-rows:
-        clamp(320px,30vw,500px)
-        clamp(160px,12vw,210px)
-        clamp(300px,25vw,410px)
-        clamp(300px,25vw,410px)!important;
-      gap:clamp(12px,1.35vw,22px)!important;
-      align-items:stretch!important;
-    }
-    .lookbook-grid .look{
-      margin:0!important;
-      min-width:0!important;
-      min-height:0!important;
-      width:auto!important;
-      height:auto!important;
-      position:relative!important;
-      overflow:hidden!important;
-      border-radius:clamp(14px,1.4vw,24px)!important;
-      background:#e8c9d3;
-      box-shadow:inset 0 0 0 1px rgba(33,29,27,.06);
-      isolation:isolate;
-    }
-    .lookbook-grid .look::after{
-      content:"";
-      position:absolute;
-      inset:0;
-      pointer-events:none;
-      background:linear-gradient(180deg,transparent 66%,rgba(33,29,27,.08));
-      opacity:.45;
-      transition:opacity .45s ease,background .45s ease;
-      z-index:2;
-    }
-    .lookbook-grid .look img{
-      width:100%!important;
-      height:100%!important;
-      object-fit:cover!important;
-      transform:none!important;
-      transition:transform .8s cubic-bezier(.2,.8,.2,1),filter .55s ease!important;
-      will-change:auto!important;
-    }
-    .lookbook-grid .look:hover img{
-      transform:scale(1.025)!important;
-      filter:saturate(1.025) contrast(.99);
-    }
-    .lookbook-grid .look:hover::after{
-      opacity:.8;
-      background:
-        radial-gradient(ellipse at center,transparent 46%,rgba(242,125,184,.05) 70%,rgba(242,125,184,.15) 100%),
-        linear-gradient(180deg,transparent 66%,rgba(33,29,27,.08));
-    }
-    .look--a{grid-area:a!important}
-    .look--b{grid-area:b!important}
-    .look--c{grid-area:c!important}
-    .look--d{grid-area:d!important}
-    .look--e{grid-area:e!important}
-    .look--f{grid-area:f!important}
-    .look--a img{object-position:center center!important}
-    .look--b img{object-position:center 48%!important}
-    .look--c img{object-position:center center!important}
-    .look--d img{object-position:center center!important}
-    .look--e img{object-position:center 58%!important}
-    .look--f img{object-position:center center!important}
-
-    .lookbook-word{
-      grid-area:word!important;
-      min-width:0!important;
-      min-height:0!important;
-      margin:0!important;
-      padding:clamp(26px,3vw,48px)!important;
-      border-radius:clamp(14px,1.4vw,24px)!important;
-      background:var(--ink)!important;
-      color:var(--champagne)!important;
-      display:flex!important;
-      flex-direction:column;
-      justify-content:flex-end!important;
-      align-items:flex-start!important;
-      position:relative!important;
-      overflow:hidden;
-      font-family:var(--serif)!important;
-      font-size:clamp(36px,3.4vw,62px)!important;
-      line-height:.82!important;
-      letter-spacing:-.045em!important;
-      text-align:left!important;
-    }
-    .lookbook-word::before{
-      content:"VALDI / EDITORIAL 2026";
-      position:absolute;
-      left:clamp(26px,3vw,48px);
-      top:clamp(22px,2.4vw,34px);
-      font-family:var(--sans);
-      font-size:9px;
-      line-height:1;
-      letter-spacing:.17em;
-      font-weight:700;
-      color:rgba(245,239,232,.58);
-    }
-    .lookbook-word::after{
-      content:"";
-      position:absolute;
-      width:180px;
-      height:180px;
-      border-radius:50%;
-      right:-65px;
-      top:-75px;
-      background:rgba(242,125,184,.26);
-      filter:blur(34px);
-      pointer-events:none;
-    }
-    .lookbook-word em{color:var(--brand)!important;font-style:italic!important}
-
-    @media (max-width:900px){
-      .lookbook-head{
-        grid-template-columns:1fr!important;
-        grid-template-rows:auto!important;
-        gap:18px!important;
-      }
-      .lookbook-head>.eyebrow,.lookbook-head h2,.lookbook-head>p{
-        grid-column:1!important;
-        grid-row:auto!important;
-      }
-      .lookbook-head h2{font-size:clamp(62px,11vw,92px)!important}
-      .lookbook-head>p{max-width:620px!important}
-      .lookbook-grid{
-        grid-template-columns:1fr 1fr!important;
-        grid-template-areas:
-          "a a"
-          "b c"
-          "word word"
-          "d e"
-          "f f"!important;
-        grid-template-rows:
-          clamp(420px,72vw,650px)
-          clamp(270px,42vw,380px)
-          clamp(170px,24vw,220px)
-          clamp(270px,42vw,380px)
-          clamp(330px,55vw,520px)!important;
-      }
-    }
-
-    @media (max-width:680px){
-      .lookbook{padding-block:78px!important}
-      .lookbook-head{margin-bottom:32px!important}
-      .lookbook-head h2{font-size:clamp(52px,15vw,76px)!important}
-      .lookbook-head>p{font-size:13px;line-height:1.65}
-      .lookbook-grid{
-        grid-template-columns:1fr 1fr!important;
-        grid-template-areas:
-          "a a"
-          "word word"
-          "b c"
-          "d e"
-          "f f"!important;
-        grid-template-rows:
-          clamp(390px,112vw,560px)
-          170px
-          clamp(210px,60vw,300px)
-          clamp(210px,60vw,300px)
-          clamp(300px,88vw,430px)!important;
-        gap:10px!important;
-      }
-      .lookbook-grid .look,.lookbook-word{border-radius:14px!important}
-      .lookbook-word{
-        padding:24px!important;
-        font-size:clamp(34px,10vw,48px)!important;
-      }
-      .lookbook-word::before{left:24px;top:22px;font-size:8px}
-    }
-
-    @media (max-width:340px){
-      .lookbook-grid{
-        grid-template-columns:1fr!important;
-        grid-template-areas:"a" "word" "b" "c" "d" "e" "f"!important;
-        grid-template-rows:auto!important;
-      }
-      .lookbook-grid .look{aspect-ratio:4/5}
-      .look--a,.look--f{aspect-ratio:1/1!important}
-      .lookbook-word{min-height:160px!important}
-    }
-
-    @media (hover:none),(pointer:coarse){
-      .lookbook-grid .look:hover img{transform:none!important;filter:none!important}
-    }
-  `;
-  document.head.appendChild(lookbookStyle);
-
-  // Keep the marquee and the navigation locked together at the top of the viewport.
-  // The measured announcement height is used instead of a hard-coded offset so the
-  // layout stays correct on desktop, mobile and after responsive breakpoints change.
+  /* Keep both top bars pinned to the viewport. */
   const syncPinnedTopBars = () => {
     if (!announcement || !header) return;
-    const announcementHeight = Math.round(announcement.getBoundingClientRect().height);
-
-    announcement.style.position = 'fixed';
-    announcement.style.top = '0';
-    announcement.style.left = '0';
-    announcement.style.right = '0';
-    announcement.style.width = '100%';
-    announcement.style.zIndex = '70';
-
-    header.style.position = 'fixed';
-    header.style.top = `${announcementHeight}px`;
-    header.style.left = '0';
-    header.style.right = '0';
-    header.style.zIndex = '65';
-
-    // Replaces the space the marquee used to occupy in normal document flow.
-    body.style.paddingTop = `${announcementHeight}px`;
-
-    // Anchor links should stop below both pinned bars instead of hiding underneath them.
-    const compactHeaderHeight = window.innerWidth <= 680 ? 62 : 70;
-    document.documentElement.style.scrollPaddingTop = `${announcementHeight + compactHeaderHeight + 12}px`;
+    const h = Math.round(announcement.getBoundingClientRect().height || (window.innerWidth <= 680 ? 30 : 32));
+    Object.assign(announcement.style, {position:'fixed',top:'0',left:'0',right:'0',width:'100%',zIndex:'70'});
+    Object.assign(header.style, {position:'fixed',top:`${h}px`,left:'0',right:'0',zIndex:'65'});
+    body.style.paddingTop = `${h}px`;
+    document.documentElement.style.scrollPaddingTop = `${h + (window.innerWidth <= 680 ? 62 : 70) + 12}px`;
   };
-
   syncPinnedTopBars();
-  window.addEventListener('resize', syncPinnedTopBars, { passive: true });
+  window.addEventListener('resize', syncPinnedTopBars, {passive:true});
 
   requestAnimationFrame(() => body.classList.add('loaded'));
-
-  const onScroll = () => {
-    header.classList.toggle('is-scrolled', window.scrollY > 36);
-  };
+  const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 36);
   onScroll();
-  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('scroll', onScroll, {passive:true});
 
-  function openMenu() {
-    mobileMenu.classList.add('is-open');
-    mobileMenu.setAttribute('aria-hidden', 'false');
-    menuToggle.setAttribute('aria-expanded', 'true');
+  /* Mobile menu. */
+  function openMenu(){
+    mobileMenu?.classList.add('is-open');
+    mobileMenu?.setAttribute('aria-hidden','false');
+    menuToggle?.setAttribute('aria-expanded','true');
     body.classList.add('menu-open');
   }
-  function closeMenu() {
-    mobileMenu.classList.remove('is-open');
-    mobileMenu.setAttribute('aria-hidden', 'true');
-    menuToggle.setAttribute('aria-expanded', 'false');
+  function closeMenu(){
+    mobileMenu?.classList.remove('is-open');
+    mobileMenu?.setAttribute('aria-hidden','true');
+    menuToggle?.setAttribute('aria-expanded','false');
     body.classList.remove('menu-open');
   }
   menuToggle?.addEventListener('click', openMenu);
   menuClose?.addEventListener('click', closeMenu);
   mobileMenu?.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
 
+  /* Reveal animation. */
   const revealItems = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window && !reduceMotion) {
-    const revealObserver = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('is-visible');
-          revealObserver.unobserve(entry.target);
+          observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -4% 0px' });
-    revealItems.forEach(el => revealObserver.observe(el));
-  } else {
-    revealItems.forEach(el => el.classList.add('is-visible'));
-  }
+    }, {threshold:.12, rootMargin:'0px 0px -4% 0px'});
+    revealItems.forEach(el => observer.observe(el));
+  } else revealItems.forEach(el => el.classList.add('is-visible'));
 
-  // Crystal shine follows the pointer inside buttons.
+  /* Crystal light follows pointer inside buttons. */
   if (!coarsePointer) {
     document.querySelectorAll('.crystal-btn, .btn').forEach(btn => {
       btn.addEventListener('pointermove', e => {
         const r = btn.getBoundingClientRect();
-        btn.style.setProperty('--mx', `${e.clientX - r.left}px`);
-        btn.style.setProperty('--my', `${e.clientY - r.top}px`);
+        btn.style.setProperty('--mx', `${e.clientX-r.left}px`);
+        btn.style.setProperty('--my', `${e.clientY-r.top}px`);
       });
       btn.addEventListener('pointerleave', () => {
-        btn.style.setProperty('--mx', '50%');
-        btn.style.setProperty('--my', '50%');
+        btn.style.setProperty('--mx','50%');
+        btn.style.setProperty('--my','50%');
       });
     });
   }
 
-  // Soft parallax only on desktop/pointer devices. Lookbook images themselves are
-  // visually locked by the editorial CSS above so the grid never drifts out of alignment.
-  const parallaxEls = [...document.querySelectorAll('[data-parallax]')];
-  let raf = null;
-  function updateParallax() {
-    raf = null;
-    if (reduceMotion || coarsePointer || window.innerWidth < 900) return;
-    const vh = window.innerHeight;
-    parallaxEls.forEach(el => {
-      const rect = el.getBoundingClientRect();
-      if (rect.bottom < 0 || rect.top > vh) return;
-      const center = rect.top + rect.height / 2;
-      const progress = (center - vh / 2) / (vh / 2);
-      const strength = Number(el.dataset.parallax || 12);
-      const y = Math.max(-Math.abs(strength), Math.min(Math.abs(strength), -progress * strength));
-      el.querySelector('img')?.style.setProperty('--parallax-y', `${y.toFixed(1)}px`);
-    });
-  }
-  if (!reduceMotion) {
-    window.addEventListener('scroll', () => {
-      if (!raf) raf = requestAnimationFrame(updateParallax);
-    }, { passive: true });
-    window.addEventListener('resize', updateParallax, { passive: true });
-    updateParallax();
+  /* Fix the owner's footer image: it was intentionally dimmed in inline styles. */
+  const quietImg = document.querySelector('img[src$="quiet-corner.jpg"]');
+  if (quietImg) {
+    const wrap = quietImg.parentElement;
+    wrap?.classList.add('quiet-corner-wrap');
+    quietImg.classList.add('quiet-corner-image');
+    if (wrap) {
+      wrap.style.opacity = '1';
+      wrap.style.pointerEvents = 'none';
+    }
+    quietImg.style.width = '52px';
+    quietImg.style.height = '52px';
+    quietImg.style.filter = 'none';
+    quietImg.style.webkitFilter = 'none';
+    quietImg.style.opacity = '1';
   }
 
-  function openModal(product) {
-    selectedProduct.textContent = product || 'VALDI';
-    modal.classList.add('is-open');
-    modal.setAttribute('aria-hidden', 'false');
-    body.classList.add('modal-open');
-    setTimeout(() => modal.querySelector('.order-modal__close')?.focus(), 80);
+  /* Footer logo must remain the same full-color brand mark as in the header. */
+  const headerLogo = document.querySelector('.brand--header img');
+  const footerLogo = document.querySelector('.footer-brand img');
+  if (headerLogo && footerLogo) {
+    footerLogo.src = headerLogo.getAttribute('src');
+    footerLogo.style.filter = 'none';
+    footerLogo.style.webkitFilter = 'none';
+    footerLogo.style.opacity = '1';
+    footerLogo.style.mixBlendMode = 'normal';
   }
-  function closeModal() {
-    modal.classList.remove('is-open');
-    modal.setAttribute('aria-hidden', 'true');
+
+  /* Order modal + individual production lead time. */
+  let leadTime = modal?.querySelector('.order-lead-time');
+  if (modal && !leadTime) {
+    leadTime = document.createElement('div');
+    leadTime.className = 'order-lead-time';
+    leadTime.innerHTML = '<strong>Ориентировочный срок изготовления</strong>от 2 недель до 1 месяца — в зависимости от модели, материалов и текущей загрузки.';
+    const productLine = modal.querySelector('.order-modal__product');
+    productLine?.insertAdjacentElement('afterend', leadTime);
+  }
+
+  function openModal(product){
+    const name = product || 'VALDI';
+    if (selectedProduct) selectedProduct.textContent = name;
+    const isCustom = /индивиду|свою|custom/i.test(name);
+    leadTime?.classList.toggle('is-visible', isCustom);
+    modal?.classList.add('is-open');
+    modal?.setAttribute('aria-hidden','false');
+    body.classList.add('modal-open');
+    setTimeout(() => modal?.querySelector('.order-modal__close')?.focus(),80);
+  }
+  function closeModal(){
+    modal?.classList.remove('is-open');
+    modal?.setAttribute('aria-hidden','true');
     body.classList.remove('modal-open');
   }
   document.querySelectorAll('.js-order').forEach(btn => btn.addEventListener('click', () => openModal(btn.dataset.product)));
   modal?.querySelectorAll('[data-close-modal]').forEach(el => el.addEventListener('click', closeModal));
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      if (modal?.classList.contains('is-open')) closeModal();
-      if (mobileMenu?.classList.contains('is-open')) closeMenu();
-    }
+
+  /* Also state the estimate inside the individual-order section itself. */
+  const customIntro = document.querySelector('.custom-intro');
+  if (customIntro && !customIntro.querySelector('.custom-lead-note')) {
+    const note = document.createElement('p');
+    note.className = 'custom-lead-note';
+    note.style.cssText = 'margin:18px 0 24px;font-size:11px;line-height:1.55;letter-spacing:.03em;color:var(--muted);max-width:520px';
+    note.innerHTML = '<strong style="color:var(--ink);font-weight:700">Ориентировочный срок:</strong> от 2 недель до 1 месяца.';
+    const button = customIntro.querySelector('.js-order');
+    button?.insertAdjacentElement('beforebegin', note);
+  }
+
+  /* Saved choices / cart with a notification bell. */
+  const STORAGE_KEY = 'valdi_saved_bags_v1';
+  const catalog = [
+    {id:'crystal-pink', name:'CRYSTAL PINK', type:'CRYSTAL', image:'assets/img/crystal-pink-front.webp'},
+    {id:'pearl', name:'PEARL', type:'CRYSTAL', image:'assets/img/crystal-pearl-front.webp'},
+    {id:'royal-blue', name:'ROYAL BLUE', type:'CRYSTAL', image:'assets/img/crystal-royal-blue.webp'},
+    {id:'soft-pink', name:'SOFT PINK', type:'KNITTED', image:'assets/img/knit-pink-taupe.webp'}
+  ];
+  let saved = [];
+  try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); } catch(e) { saved = []; }
+  saved = Array.isArray(saved) ? saved.filter(id => catalog.some(p => p.id === id)) : [];
+
+  const iconMarkup = `<svg class="cart-trigger__bag" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 8.5h11l1 11h-13l1-11Z"/><path d="M9 9V7a3 3 0 0 1 6 0v2"/></svg><span class="cart-trigger__bell" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7.5 16h9l-1.2-1.8V10a3.3 3.3 0 0 0-6.6 0v4.2L7.5 16Z"/><path d="M10.5 18a1.7 1.7 0 0 0 3 0"/></svg></span><span class="cart-count">0</span>`;
+
+  const headerRight = document.querySelector('.header-nav--right');
+  let desktopCart = document.createElement('button');
+  desktopCart.type = 'button';
+  desktopCart.className = 'cart-trigger';
+  desktopCart.setAttribute('aria-label','Открыть выбранные сумки');
+  desktopCart.innerHTML = iconMarkup;
+  const orderButton = headerRight?.querySelector('.js-order');
+  if (headerRight) headerRight.insertBefore(desktopCart, orderButton || null);
+
+  let mobileCart = document.createElement('button');
+  mobileCart.type = 'button';
+  mobileCart.className = 'cart-trigger cart-trigger--mobile';
+  mobileCart.setAttribute('aria-label','Открыть выбранные сумки');
+  mobileCart.innerHTML = iconMarkup;
+  const headerGrid = document.querySelector('.header-grid');
+  if (headerGrid && menuToggle) headerGrid.insertBefore(mobileCart, menuToggle);
+
+  const drawer = document.createElement('aside');
+  drawer.className = 'cart-drawer';
+  drawer.setAttribute('aria-hidden','true');
+  drawer.innerHTML = `
+    <div class="cart-drawer__backdrop" data-cart-close></div>
+    <div class="cart-drawer__panel" role="dialog" aria-modal="true" aria-label="Выбранные сумки">
+      <div class="cart-drawer__head"><div><span class="eyebrow">YOUR VALDI</span><h2>Выбранные<br><em style="color:var(--brand);font-style:italic">сумки</em></h2></div><button class="cart-drawer__close" type="button" data-cart-close aria-label="Закрыть">×</button></div>
+      <div class="cart-drawer__list"></div>
+      <div class="cart-drawer__footer"><div class="cart-drawer__summary"><span>Выбрано вариантов</span><strong class="cart-total">0</strong></div><button class="btn btn--dark crystal-btn cart-order" type="button"><span>Обсудить выбранное</span><b>→</b></button><p class="cart-drawer__hint">Корзина сохраняет понравившиеся варианты на этом устройстве. Финальные детали, оттенки и наличие уточняются при заказе.</p></div>
+    </div>`;
+  document.body.appendChild(drawer);
+
+  const cartList = drawer.querySelector('.cart-drawer__list');
+  const cartTotal = drawer.querySelector('.cart-total');
+
+  const productCards = [...document.querySelectorAll('.product-card')];
+  productCards.forEach((card, index) => {
+    const product = catalog[index];
+    const media = card.querySelector('.product-media');
+    if (!product || !media) return;
+    const saveBtn = document.createElement('button');
+    saveBtn.type = 'button';
+    saveBtn.className = 'product-save';
+    saveBtn.dataset.productId = product.id;
+    saveBtn.setAttribute('aria-label', `Добавить ${product.name} в выбранное`);
+    saveBtn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 8.5h11l1 11h-13l1-11Z"/><path d="M9 9V7a3 3 0 0 1 6 0v2"/></svg>`;
+    media.appendChild(saveBtn);
+    saveBtn.addEventListener('click', e => {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleSaved(product.id);
+    });
   });
 
-  // Keep FAQ calm: one item open at a time.
-  const details = [...document.querySelectorAll('.faq-item')];
-  details.forEach(item => item.addEventListener('toggle', () => {
-    if (!item.open) return;
-    details.forEach(other => { if (other !== item) other.open = false; });
-  }));
+  function persist(){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(saved)); } catch(e) {}
+  }
+  function ring(){
+    [desktopCart,mobileCart].forEach(btn => {
+      btn.classList.remove('is-ringing');
+      void btn.offsetWidth;
+      btn.classList.add('is-ringing');
+      setTimeout(() => btn.classList.remove('is-ringing'),700);
+    });
+  }
+  function toggleSaved(id){
+    if (saved.includes(id)) saved = saved.filter(x => x !== id);
+    else { saved.push(id); ring(); }
+    persist();
+    renderCart();
+  }
+  function renderCart(){
+    const chosen = saved.map(id => catalog.find(p => p.id === id)).filter(Boolean);
+    document.querySelectorAll('.cart-count').forEach(el => el.textContent = String(chosen.length));
+    document.querySelectorAll('.product-save').forEach(btn => {
+      const active = saved.includes(btn.dataset.productId);
+      btn.classList.toggle('is-added', active);
+      const p = catalog.find(x => x.id === btn.dataset.productId);
+      if (p) btn.setAttribute('aria-label', active ? `Убрать ${p.name} из выбранного` : `Добавить ${p.name} в выбранное`);
+    });
+    if (cartTotal) cartTotal.textContent = String(chosen.length);
+    if (!cartList) return;
+    if (!chosen.length) {
+      cartList.innerHTML = '<div class="cart-empty">Здесь появятся понравившиеся модели. Нажмите на маленькую сумку в карточке товара — и вариант сохранится здесь.</div>';
+      return;
+    }
+    cartList.innerHTML = chosen.map(p => `<article class="cart-item"><img src="${p.image}" alt="${p.name}"><div><h3>${p.name}</h3><p>${p.type} · ручная работа</p></div><button class="cart-item__remove" type="button" data-remove="${p.id}" aria-label="Удалить ${p.name}">×</button></article>`).join('');
+    cartList.querySelectorAll('[data-remove]').forEach(btn => btn.addEventListener('click', () => toggleSaved(btn.dataset.remove)));
+  }
+
+  function openCart(){
+    drawer.classList.add('is-open');
+    drawer.setAttribute('aria-hidden','false');
+    body.classList.add('modal-open');
+  }
+  function closeCart(){
+    drawer.classList.remove('is-open');
+    drawer.setAttribute('aria-hidden','true');
+    body.classList.remove('modal-open');
+  }
+  desktopCart.addEventListener('click', openCart);
+  mobileCart.addEventListener('click', openCart);
+  drawer.querySelectorAll('[data-cart-close]').forEach(el => el.addEventListener('click', closeCart));
+  drawer.querySelector('.cart-order')?.addEventListener('click', () => {
+    const names = saved.map(id => catalog.find(p => p.id === id)?.name).filter(Boolean);
+    closeCart();
+    openModal(names.length ? `Выбранные модели: ${names.join(', ')}` : 'Индивидуальный заказ');
+  });
+  renderCart();
+
+  /* FAQ: make manufacturing timing concrete. */
+  [...document.querySelectorAll('.faq-item')].forEach(item => {
+    const q = item.querySelector('summary')?.textContent || '';
+    if (/Сколько занимает изготовление/i.test(q)) {
+      const p = item.querySelector('div p');
+      if (p) p.textContent = 'Ориентировочный срок изготовления — от 2 недель до 1 месяца. Он зависит от выбранной модели, материалов и текущей загрузки; точный срок подтверждаем перед оформлением заказа.';
+    }
+    item.addEventListener('toggle', () => {
+      if (!item.open) return;
+      document.querySelectorAll('.faq-item').forEach(other => { if (other !== item) other.open = false; });
+    });
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    if (drawer.classList.contains('is-open')) closeCart();
+    else if (modal?.classList.contains('is-open')) closeModal();
+    else if (mobileMenu?.classList.contains('is-open')) closeMenu();
+  });
 })();
