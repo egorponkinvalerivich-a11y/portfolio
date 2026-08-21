@@ -154,6 +154,13 @@ const observer = new IntersectionObserver((entries) => entries.forEach(e => {
 }), {threshold:.08});
 function observeReveals() { $$('.reveal:not(.visible)').forEach(el=>observer.observe(el)); }
 
+const siteHeader = $('.site-header');
+function syncHeaderState() {
+  siteHeader?.classList.toggle('is-scrolled', window.scrollY > 64);
+}
+window.addEventListener('scroll', syncHeaderState, {passive:true});
+syncHeaderState();
+
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') $('#mobileNav').classList.remove('open');
 });
