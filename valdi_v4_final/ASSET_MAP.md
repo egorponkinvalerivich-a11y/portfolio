@@ -1,27 +1,49 @@
-# VALDI asset map
+# VALDI asset / pair audit
 
-Production card mapping for the refreshed storefront. Only confirmed product/model pairs are used for hover states; uncertain bridal pairings intentionally use product-only cards.
+The supplied archive contains 53 JPG files, 48 unique images and 5 exact duplicate files. Product/model pairing is based on the same physical bag: body shape, handle construction, bead pattern, hardware and colour — not colour alone.
 
-## Beaded
-- SMOKE → `product-smoke.webp`
-- MERLOT → `product-merlot.webp`
-- BLUE → `product-blue.webp` / `model-blue.webp`
-- GOLD → `product-gold.webp` / `model-sun.webp`
-- LILAC → `product-lilac.webp` / `model-lilac.webp`
-- OLIVE → `product-olive.webp` / `model-olive.webp`
-- ROSE → `product-rose.webp` / `model-rose.webp`
-- PEARL → `product-pearl.webp` / `model-pearl.webp`
+## Storefront pairs now considered confirmed
 
-## Soft
-- CANDY KNIT → `product-knit.webp` / `model-knit-candy.webp`
-- SAND KNIT → `product-knit-sand.webp` / `model-knit-sand.webp`
-- SORBET KNIT → `product-knit-sorbet.webp` / `model-knit-sorbet.webp`
+| Storefront card | Product asset | Model asset | Source-photo pair | Status |
+|---|---|---|---|---|
+| ARCH / PEARL | `product-pearl.webp` | `model-pearl.webp` | 1926 → 7228 | confirmed |
+| ARCH / VIOLET | `product-lilac.webp` | `model-lilac.webp` | 6838 → 7229 | confirmed |
+| SCARF / BLUE | `product-blue.webp` | `model-blue.webp` | 6835 → 7350 | confirmed |
+| ARCH / GREEN | `product-olive.webp` | `model-olive.webp` | 6837 → 7231 | confirmed |
+| ARCH / YELLOW | `product-sun.webp` | `model-sun.webp` | 6836 → 7230 | confirmed |
+| SCARF / PINK | `product-blush-silk.webp` | `model-rose.webp` | 6834 → 7174 | confirmed |
+| SOFT / PINK WHITE | `product-knit.webp` | `model-knit-candy.webp` | 6883 → 7351 | confirmed |
+| SOFT / CREAM | `product-knit-sand.webp` | `model-knit-sand.webp` | 6884 → 7352 | confirmed |
+| SOFT / PINK | `product-knit-sorbet.webp` | `model-knit-sorbet.webp` | 6885 → 7353 | confirmed |
 
-## Bridal
-- BLUSH → `product-bridal-blush.webp`
-- MIST → `product-bridal-mist.webp`
-- PEARL → `product-bridal-pearl.webp`
-- SILVER → `product-bridal-silver.webp`
-- WHITE → `product-bridal-white.webp`
+## Product-only cards in the current storefront
 
-Editorial bridal imagery is used only in editorial sections, not as an unverified product-card hover image.
+- `product-rose.webp` / ARCH / ROSE: source product 7123. Its correct model photo is source 7227, but that exact model asset is not currently present under a safe storefront filename. Hover is intentionally disabled.
+- `product-gold.webp`: the previous `model-sun.webp` pairing was wrong. `model-sun.webp` belongs to the yellow arch bag, not GOLD.
+- `product-smoke.webp` and `product-merlot.webp`: no model image is attached unless the same physical bag can be confirmed.
+- All current `product-bridal-*.webp` cards remain product-only. Bridal campaign photos are editorial material, not automatic SKU pairs.
+
+## Important correction
+
+`model-rose.webp` is **not** the matching model image for `product-rose.webp`. It shows the pink scarf-handle bag and therefore belongs with `product-blush-silk.webp`.
+
+## Full source-photo mapping used for the audit
+
+- Flap variants: 7054, 7055, 7056, 7057, 7058, 7127 — product-only in the supplied archive.
+- Arch: 7123 → 7227; 7124 → 7226; 7125 → 7237; 7126 product-only; 6836 → 7230; 6837 → 7231; 6838 → 7229; 1926 → 7228.
+- Scarf handle: 6834 → 7174; 6835 → 7350. Beige scarf-handle appears only on-model (7176 / 7349).
+- Crystal envelope: 1925 → 7232.
+- Pearl chain: 1924 appears in bridal context 7292.
+- Soft: 6883 → 7351; 6884 → 7352; 6885 → 7353.
+- Bridal/custom mini format: 6839 with campaign context 7291 / 7295.
+- Editorial-only: 7175 (magenta arch with no isolated product), 7176 / 7349 (beige scarf-handle with no isolated product), 6840 / 6841, 7291–7295, 7397 / 7398.
+
+## Exact duplicates excluded from the source audit
+
+- 7057 = 7404
+- 7058 = 7403
+- 7174 = 7174 (1)
+- 7175 = 7175 (1)
+- 7176 = 7176 (1)
+
+The last four digits refer to the original Telegram-export filenames.
