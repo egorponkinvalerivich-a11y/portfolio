@@ -1,0 +1,69 @@
+name: VALDI HQ image rebuild
+
+on:
+  push:
+    branches:
+      - valdi-hq-images-20260822
+    paths:
+      - 'valdi_v4_final/assets/img/hq_chunks/**'
+      - '.github/workflows/valdi-hq-rebuild.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Decode HQ WebP payloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          payloads=(valdi_v4_final/assets/img/hq_chunks/*.b64)
+          if [ ${#payloads[@]} -eq 0 ]; then
+            echo 'No HQ payloads found.'
+            exit 1
+          fi
+
+          for src in "${payloads[@]}"; do
+            base="$(basename "$src" .b64)"
+            base="${base#test_}"
+            base="${base%_q82}"
+            dst="valdi_v4_final/assets/img/campaign/$base"
+            echo "Decoding $src -> $dst"
+            base64 --decode "$src" > "$dst"
+            bytes="$(wc -c < "$dst")"
+            if [ "$bytes" -lt 10000 ]; then
+              echo "Decoded file is unexpectedly small: $dst ($bytes bytes)"
+              exit 1
+            fi
+            header="$(head -c 4 "$dst")"
+            if [ "$header" != 'RIFF' ]; then
+              echo "Decoded file is not a RIFF/WebP payload: $dst"
+              exit 1
+            fi
+          done
+
+      - name: Remove transfer payloads
+        run: rm -rf valdi_v4_final/assets/img/hq_chunks
+
+      - name: Commit rebuilt images
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add valdi_v4_final/assets/img/campaign valdi_v4_final/assets/img/hq_chunks
+          if git diff --cached --quiet; then
+            echo 'Nothing to commit.'
+            exit 1
+          fi
+          git commit -m 'Restore VALDI HQ image assets [skip ci]'
+          git push
