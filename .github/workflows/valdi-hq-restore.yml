@@ -26,17 +26,12 @@ jobs:
           import base64, re
           src=Path('valdi_v4_final/assets/img/hq_restore')
           dst=Path('valdi_v4_final/assets/img/campaign')
+          expected={x.strip() for x in (src/'READY').read_text().splitlines() if x.strip() and not x.startswith('#')}
           groups={}
           for p in src.glob('*.part*'):
               m=re.match(r'(.+\.webp)\.part(\d+)$', p.name)
-              if m:
+              if m and m.group(1) in expected:
                   groups.setdefault(m.group(1), []).append((int(m.group(2)),p))
-          expected={
-            'model-arch-rose.webp','model-arch-blue-iridescent.webp','model-gold.webp',
-            'model-smoke.webp','model-merlot.webp','model-bridal-blush.webp',
-            'model-bridal-mist.webp','model-bridal-pearl.webp','model-bridal-silver.webp',
-            'model-bridal-white.webp','product-scarf-blue.webp'
-          }
           if set(groups)!=expected:
               raise SystemExit(f'Payload set mismatch: got {sorted(groups)}, expected {sorted(expected)}')
           for name, parts in groups.items():
@@ -49,16 +44,21 @@ jobs:
               (dst/name).write_bytes(data)
               print(name, len(data))
           PY
-      - name: Remove transport parts and workflow
+      - name: Remove consumed transport files
+        shell: bash
         run: |
-          rm -rf valdi_v4_final/assets/img/hq_restore
-          rm -f .github/workflows/valdi-hq-restore.yml
+          set -euo pipefail
+          while IFS= read -r name; do
+            [ -z "$name" ] && continue
+            rm -f valdi_v4_final/assets/img/hq_restore/"$name".part*
+          done < valdi_v4_final/assets/img/hq_restore/READY
+          rm -f valdi_v4_final/assets/img/hq_restore/READY
       - name: Commit restored images
         shell: bash
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add valdi_v4_final/assets/img/campaign valdi_v4_final/assets/img/hq_restore .github/workflows/valdi-hq-restore.yml
+          git add valdi_v4_final/assets/img/campaign valdi_v4_final/assets/img/hq_restore
           git commit -m 'Restore VALDI HQ product images [skip ci]'
           git push
