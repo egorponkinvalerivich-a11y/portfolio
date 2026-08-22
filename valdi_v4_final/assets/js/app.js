@@ -1,28 +1,28 @@
 const products = [
   // BEADED — product/model pairs audited by silhouette, handle, bead pattern and color.
-  {id:"beaded-rose",name:"ARCH / ROSE",collection:"beaded",category:"BEADED",tone:"Розовый",cover:"assets/img/campaign/product-rose.webp",hover:"assets/img/campaign/model-arch-rose.webp",desc:"Арочная сумка из бусин в розовой палитре."},
+  {id:"beaded-rose",name:"ARCH / ROSE",collection:"beaded",category:"BEADED",tone:"Розовый",cover:"assets/img/campaign/product-rose.webp",hover:null,desc:"Арочная сумка из бусин в розовой палитре."},
   {id:"beaded-pearl",name:"ARCH / PEARL",collection:"beaded",category:"BEADED",tone:"Жемчужный",cover:"assets/img/campaign/product-pearl.webp",hover:null,desc:"Светлая кристальная арочная модель. Неподходящий второй кадр удалён."},
   {id:"beaded-violet",name:"ARCH / VIOLET",collection:"beaded",category:"BEADED",tone:"Фиолетовый",cover:"assets/img/campaign/product-lilac.webp",hover:"assets/img/campaign/model-lilac.webp",desc:"Арочная модель в фиолетовой палитре."},
-  {id:"beaded-blue-iridescent",name:"ARCH / BLUE IRIDESCENT",collection:"beaded",category:"BEADED",tone:"Синий иридисцентный",cover:"assets/img/campaign/product-blue.webp",hover:"assets/img/campaign/model-arch-blue-iridescent.webp",desc:"Переливающаяся синяя арочная модель."},
-  {id:"beaded-scarf-blue",name:"SCARF / BLUE",collection:"beaded",category:"BEADED",tone:"Голубой",cover:"assets/img/campaign/product-scarf-blue.webp",hover:"assets/img/campaign/model-blue.webp",desc:"Синяя scarf-handle модель из крупных матовых бусин с текстильными акцентами на ручке."},
+  {id:"beaded-blue-iridescent",name:"ARCH / BLUE IRIDESCENT",collection:"beaded",category:"BEADED",tone:"Синий иридисцентный",cover:"assets/img/campaign/product-blue.webp",hover:null,desc:"Переливающаяся синяя арочная модель."},
+  {id:"beaded-scarf-blue",name:"SCARF / BLUE",collection:"beaded",category:"BEADED",tone:"Голубой",cover:"assets/img/campaign/model-blue.webp",hover:null,desc:"Синяя scarf-handle модель из крупных матовых бусин с текстильными акцентами на ручке."},
   {id:"beaded-green",name:"ARCH / GREEN",collection:"beaded",category:"BEADED",tone:"Зелёный",cover:"assets/img/campaign/product-olive.webp",hover:"assets/img/campaign/model-olive.webp",desc:"Зелёная арочная модель из декоративных бусин."},
   {id:"beaded-sun",name:"ARCH / YELLOW",collection:"beaded",category:"BEADED",tone:"Жёлтый",cover:"assets/img/campaign/product-sun.webp",hover:"assets/img/campaign/model-sun.webp",desc:"Жёлтая арочная модель из декоративных бусин."},
-  {id:"beaded-gold",name:"GOLD",collection:"beaded",category:"BEADED",tone:"Золотистый",cover:"assets/img/campaign/product-gold.webp",hover:"assets/img/campaign/model-gold.webp",desc:"Золотистая модель из бусин ручной сборки."},
+  {id:"beaded-gold",name:"GOLD",collection:"beaded",category:"BEADED",tone:"Золотистый",cover:"assets/img/campaign/product-gold.webp",hover:null,desc:"Золотистая модель из бусин ручной сборки."},
   {id:"beaded-blush-silk",name:"SCARF / PINK",collection:"beaded",category:"BEADED",tone:"Розовый",cover:"assets/img/campaign/product-blush-silk.webp",hover:"assets/img/campaign/model-rose.webp",desc:"Розовая сумка из крупных бусин с текстильным платком на ручке."},
-  {id:"beaded-smoke",name:"SMOKE",collection:"beaded",category:"BEADED",tone:"Графитовый",cover:"assets/img/campaign/product-smoke.webp",hover:"assets/img/campaign/model-smoke.webp",desc:"Графичная сумка из бусин в дымчатой палитре."},
-  {id:"beaded-merlot",name:"MERLOT",collection:"beaded",category:"BEADED",tone:"Винный",cover:"assets/img/campaign/product-merlot.webp",hover:"assets/img/campaign/model-merlot.webp",desc:"Насыщенная винная модель из бусин ручной сборки."},
+  {id:"beaded-smoke",name:"SMOKE",collection:"beaded",category:"BEADED",tone:"Графитовый",cover:"assets/img/campaign/product-smoke.webp",hover:null,desc:"Графичная сумка из бусин в дымчатой палитре."},
+  {id:"beaded-merlot",name:"MERLOT",collection:"beaded",category:"BEADED",tone:"Винный",cover:"assets/img/campaign/product-merlot.webp",hover:null,desc:"Насыщенная винная модель из бусин ручной сборки."},
 
   // SOFT — confirmed product/model pairs.
   {id:"soft-candy",name:"SOFT / PINK WHITE",collection:"soft",category:"SOFT",tone:"Розовый + белый",cover:"assets/img/campaign/product-knit.webp",hover:"assets/img/campaign/model-knit-candy.webp",desc:"Мягкая вязаная сумка с объёмной текстильной фактурой."},
   {id:"soft-sand",name:"SOFT / CREAM",collection:"soft",category:"SOFT",tone:"Кремовый",cover:"assets/img/campaign/product-knit-sand.webp",hover:"assets/img/campaign/model-knit-sand.webp",desc:"Мягкая вязаная модель в спокойной кремовой гамме."},
   {id:"soft-sorbet",name:"SOFT / PINK",collection:"soft",category:"SOFT",tone:"Розовый",cover:"assets/img/campaign/product-knit-sorbet.webp",hover:"assets/img/campaign/model-knit-sorbet.webp",desc:"Компактная мягкая сумка в розовой палитре."},
 
-  // BRIDAL — curated secondary editorial images for each card.
-  {id:"bridal-blush",name:"BRIDAL / BLUSH",collection:"bridal",category:"BRIDAL",tone:"Пудровый",cover:"assets/img/campaign/product-bridal-blush.webp",hover:"assets/img/campaign/model-bridal-blush.webp",desc:"Светлая модель для свадебного или вечернего образа."},
-  {id:"bridal-mist",name:"BRIDAL / MIST",collection:"bridal",category:"BRIDAL",tone:"Светлый",cover:"assets/img/campaign/product-bridal-mist.webp",hover:"assets/img/campaign/model-bridal-mist.webp",desc:"Светлая кристальная модель для особенного образа."},
-  {id:"bridal-pearl",name:"BRIDAL / PEARL",collection:"bridal",category:"BRIDAL",tone:"Жемчужный",cover:"assets/img/campaign/product-bridal-pearl.webp",hover:"assets/img/campaign/model-bridal-pearl.webp",desc:"Жемчужная bridal-модель ручной сборки."},
-  {id:"bridal-silver",name:"BRIDAL / SILVER",collection:"bridal",category:"BRIDAL",tone:"Серебристый",cover:"assets/img/campaign/product-bridal-silver.webp",hover:"assets/img/campaign/model-bridal-silver.webp",desc:"Серебристая кристальная модель для особенного дня."},
-  {id:"bridal-white",name:"BRIDAL / WHITE",collection:"bridal",category:"BRIDAL",tone:"Белый",cover:"assets/img/campaign/product-bridal-white.webp",hover:"assets/img/campaign/model-bridal-white.webp",desc:"Белая bridal-модель с выразительной фактурой."}
+  // BRIDAL — low-resolution secondary assets are intentionally disabled until HQ originals are stored safely.
+  {id:"bridal-blush",name:"BRIDAL / BLUSH",collection:"bridal",category:"BRIDAL",tone:"Пудровый",cover:"assets/img/campaign/product-bridal-blush.webp",hover:null,desc:"Светлая модель для свадебного или вечернего образа."},
+  {id:"bridal-mist",name:"BRIDAL / MIST",collection:"bridal",category:"BRIDAL",tone:"Светлый",cover:"assets/img/campaign/product-bridal-mist.webp",hover:null,desc:"Светлая кристальная модель для особенного образа."},
+  {id:"bridal-pearl",name:"BRIDAL / PEARL",collection:"bridal",category:"BRIDAL",tone:"Жемчужный",cover:"assets/img/campaign/product-bridal-pearl.webp",hover:null,desc:"Жемчужная bridal-модель ручной сборки."},
+  {id:"bridal-silver",name:"BRIDAL / SILVER",collection:"bridal",category:"BRIDAL",tone:"Серебристый",cover:"assets/img/campaign/product-bridal-silver.webp",hover:null,desc:"Серебристая кристальная модель для особенного дня."},
+  {id:"bridal-white",name:"BRIDAL / WHITE",collection:"bridal",category:"BRIDAL",tone:"Белый",cover:"assets/img/campaign/product-bridal-white.webp",hover:null,desc:"Белая bridal-модель с выразительной фактурой."}
 ];
 
 const $ = (s, root=document) => root.querySelector(s);
